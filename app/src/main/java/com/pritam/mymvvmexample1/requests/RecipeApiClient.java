@@ -30,6 +30,7 @@ public class RecipeApiClient {
     private MutableLiveData<List<Recipe>> mRecipes;
     private RetrieveRecipesRunnable mRetrieveRecipesRunnable;
     private MutableLiveData<Recipe> mRecipe;
+    private MutableLiveData<String> mError;
     private RetrieveRecipeRunnable mRetrieveRecipeRunnable;
     private MutableLiveData<Boolean> mRecipeRequestTimeout = new MutableLiveData<>();
 
@@ -43,6 +44,7 @@ public class RecipeApiClient {
     private RecipeApiClient(){
         mRecipes = new MutableLiveData<>();
         mRecipe = new MutableLiveData<>();
+        mError = new MutableLiveData<>();
     }
 
     public LiveData<List<Recipe>> getRecipes(){
@@ -51,6 +53,10 @@ public class RecipeApiClient {
 
     public LiveData<Recipe> getRecipe(){
         return mRecipe;
+    }
+
+    public LiveData<String> getError(){
+        return mError;
     }
 
     public LiveData<Boolean> isRecipeRequestTimedOut(){
@@ -121,16 +127,19 @@ public class RecipeApiClient {
                         List<Recipe> currentRecipes = mRecipes.getValue();
                         currentRecipes.addAll(list);
                         mRecipes.postValue(currentRecipes);
+                        mError.postValue(null);
                     }
                 }
                 else{
                     String error = response.errorBody().string();
                     Log.e(TAG, "run: " + error );
                     mRecipes.postValue(null);
+                    mError.postValue(error);
                 }
             } catch (IOException e) {
                 e.printStackTrace();
                 mRecipes.postValue(null);
+                mError.postValue(e.getMessage());
             }
 
         }
@@ -169,15 +178,18 @@ public class RecipeApiClient {
                 if(response.code() == 200){
                     Recipe recipe = ((RecipeResponse)response.body()).getRecipe();
                     mRecipe.postValue(recipe);
+                    mError.postValue(null);
                 }
                 else{
                     String error = response.errorBody().string();
                     Log.e(TAG, "run: " + error );
                     mRecipe.postValue(null);
+                    mError.postValue(error);
                 }
             } catch (IOException e) {
                 e.printStackTrace();
                 mRecipe.postValue(null);
+                mError.postValue(e.getMessage());
             }
 
         }

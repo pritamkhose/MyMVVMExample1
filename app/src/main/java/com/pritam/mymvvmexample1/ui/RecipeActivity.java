@@ -15,6 +15,7 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.google.android.material.snackbar.Snackbar;
 import com.pritam.mymvvmexample1.ui.base.BaseActivity;
 import com.pritam.mymvvmexample1.R;
 import com.pritam.mymvvmexample1.models.Recipe;
@@ -51,20 +52,20 @@ public class RecipeActivity extends BaseActivity {
 
     }
 
-    private void getIncomingIntent(){
-        if(getIntent().hasExtra("recipe")){
+    private void getIncomingIntent() {
+        if (getIntent().hasExtra("recipe")) {
             Recipe recipe = getIntent().getParcelableExtra("recipe");
             Log.d(TAG, "getIncomingIntent: " + recipe.getTitle());
             mRecipeViewModel.searchRecipeById(recipe.getRecipe_id());
         }
     }
 
-    private void subscribeObservers(){
+    private void subscribeObservers() {
         mRecipeViewModel.getRecipe().observe(this, new Observer<Recipe>() {
             @Override
             public void onChanged(@Nullable Recipe recipe) {
-                if(recipe != null){
-                    if(recipe.getRecipe_id().equals(mRecipeViewModel.getRecipeId())){
+                if (recipe != null) {
+                    if (recipe.getRecipe_id().equals(mRecipeViewModel.getRecipeId())) {
                         setRecipeProperties(recipe);
                         mRecipeViewModel.setRetrievedRecipe(true);
                     }
@@ -75,22 +76,31 @@ public class RecipeActivity extends BaseActivity {
         mRecipeViewModel.isRecipeRequestTimedOut().observe(this, new Observer<Boolean>() {
             @Override
             public void onChanged(@Nullable Boolean aBoolean) {
-                if(aBoolean && !mRecipeViewModel.didRetrieveRecipe()){
+                if (aBoolean && !mRecipeViewModel.didRetrieveRecipe()) {
                     Log.d(TAG, "onChanged: timed out..");
                     displayErrorScreen("Error retrieving data. Check network connection.");
                 }
             }
         });
+
+        mRecipeViewModel.getError().observe(this, new Observer<String>() {
+            @Override
+            public void onChanged(@Nullable String error) {
+                if (error != null) {
+                    Log.d(TAG, "error: " + error);
+                    Snackbar.make(findViewById(android.R.id.content), error, Snackbar.LENGTH_LONG).show();
+                }
+            }
+        });
     }
 
-    private void displayErrorScreen(String errorMessage){
+    private void displayErrorScreen(String errorMessage) {
         mRecipeTitle.setText("Error retrieveing recipe...");
         mRecipeRank.setText("");
         TextView textView = new TextView(this);
-        if(!errorMessage.equals("")){
+        if (!errorMessage.equals("")) {
             textView.setText(errorMessage);
-        }
-        else{
+        } else {
             textView.setText("Error");
         }
         textView.setTextSize(15);
@@ -111,8 +121,8 @@ public class RecipeActivity extends BaseActivity {
         showProgressBar(false);
     }
 
-    private void setRecipeProperties(Recipe recipe){
-        if(recipe != null){
+    private void setRecipeProperties(Recipe recipe) {
+        if (recipe != null) {
             RequestOptions requestOptions = new RequestOptions()
                     .placeholder(R.drawable.ic_launcher_background);
 
@@ -125,7 +135,7 @@ public class RecipeActivity extends BaseActivity {
             mRecipeRank.setText(String.valueOf(Math.round(recipe.getSocial_rank())));
 
             mRecipeIngredientsContainer.removeAllViews();
-            for(String ingredient: recipe.getIngredients()){
+            for (String ingredient : recipe.getIngredients()) {
                 TextView textView = new TextView(this);
                 textView.setText(ingredient);
                 textView.setTextSize(15);
@@ -140,7 +150,7 @@ public class RecipeActivity extends BaseActivity {
         showProgressBar(false);
     }
 
-    private void showParent(){
+    private void showParent() {
         mScrollView.setVisibility(View.VISIBLE);
     }
 

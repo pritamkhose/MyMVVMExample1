@@ -20,6 +20,7 @@ public class RecipeRepository {
     private int mPageNumber;
     private MutableLiveData<Boolean> mIsQueryExhausted = new MutableLiveData<>();
     private MediatorLiveData<List<Recipe>> mRecipes = new MediatorLiveData<>();
+    private MediatorLiveData<String> mError = new MediatorLiveData<>();
 
     public static RecipeRepository getInstance(){
         if(instance == null){
@@ -72,6 +73,10 @@ public class RecipeRepository {
 
     public LiveData<Recipe> getRecipe(){
         return mRecipeApiClient.getRecipe();
+    }
+
+    public LiveData<String> getError(){
+        return mRecipeApiClient.getError();
     }
 
     public void searchRecipeById(String recipeId){

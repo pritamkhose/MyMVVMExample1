@@ -16,6 +16,7 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.pritam.mymvvmexample1.R;
 import com.pritam.mymvvmexample1.adapters.OnRecipeListener;
 import com.pritam.mymvvmexample1.adapters.RecipeRecyclerAdapter;
@@ -74,6 +75,16 @@ public class RecipeListActivity extends AppCompatActivity implements OnRecipeLis
                 Log.d(TAG, "onChanged: the query is exhausted..." + aBoolean);
                 if(aBoolean) {
                     mAdapter.setQueryExhausted();
+                }
+            }
+        });
+
+        mRecipeListViewModel.getError().observe(this, new Observer<String>() {
+            @Override
+            public void onChanged(@Nullable String error) {
+                if (error != null) {
+                    Log.d(TAG, "error: " + error);
+                    Snackbar.make(findViewById(android.R.id.content), error, Snackbar.LENGTH_LONG).show();
                 }
             }
         });

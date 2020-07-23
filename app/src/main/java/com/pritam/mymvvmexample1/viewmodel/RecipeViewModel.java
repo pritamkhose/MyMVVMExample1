@@ -21,6 +21,10 @@ public class RecipeViewModel extends ViewModel {
         return mRecipeRepository.getRecipe();
     }
 
+    public LiveData<String> getError(){
+        return mRecipeRepository.getError();
+    }
+
     public LiveData<Boolean> isRecipeRequestTimedOut(){
         return mRecipeRepository.isRecipeRequestTimedOut();
     }

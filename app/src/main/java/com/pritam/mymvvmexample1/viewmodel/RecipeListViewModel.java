@@ -23,6 +23,10 @@ public class RecipeListViewModel extends ViewModel {
         return mRecipeRepository.getRecipes();
     }
 
+    public LiveData<String> getError(){
+        return mRecipeRepository.getError();
+    }
+
     public LiveData<Boolean> isQueryExhausted(){
         return mRecipeRepository.isQueryExhausted();
     }
